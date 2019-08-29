@@ -4,7 +4,7 @@ A simple Arcaea lib, It can help you to simulate various operations in Arcaea.
 
 ## install
 ```shell
-npm install arc-lib
+npm install arcaea-lib
 ```
 
 ## usage
@@ -12,7 +12,7 @@ npm install arc-lib
 ### import 
 
 ```typescript
-import Arcaea from 'arc-lib'
+import Arcaea from 'arcaea-lib'
 
 let arc: Arcaea = new Arcaea();
 ```
