@@ -14,7 +14,7 @@ npm install arc-lib
 ```typescript
 import Arcaea from 'arc-lib'
 
-let arc = new Arcaea();
+let arc: Arcaea = new Arcaea();
 ```
 
 ### get user info
