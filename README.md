@@ -1,4 +1,4 @@
-# arc-lib
+# arcaea-lib
 
 A simple Arcaea lib, It can help you to simulate various operations in Arcaea.
 
