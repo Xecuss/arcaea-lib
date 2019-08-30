@@ -125,7 +125,14 @@ export interface IArcRankItem {
     is_skill_sealed: boolean;
     is_char_uncapped: boolean;
 }
+export interface IArcSelfRankItem extends IArcRankItem {
+    rank: number;
+}
 export interface IArcRankResponse {
     success: boolean;
     value?: IArcRankItem[];
+}
+export interface IArcSelfRankResponse {
+    success: boolean;
+    value?: IArcSelfRankItem[];
 }

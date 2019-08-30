@@ -1,5 +1,5 @@
 import xs from 'xs-io';
-import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse } from './Arcaea.interface';
+import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse } from './Arcaea.interface';
 
 const addUrl="https://arcapi.lowiro.com/7/friend/me/add",
       delUrl="https://arcapi.lowiro.com/7/friend/me/delete",
@@ -56,6 +56,12 @@ export default class Arcaea{
         let targetUrl: string = worldRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
             res: Buffer = await xs.read(targetUrl, this.opt),
             data: IArcRankResponse = JSON.parse(res.toString());
+        return data;
+    }
+    public async getSelfRank(song_id: string, difficulty: number): Promise<IArcSelfRankResponse>{
+        let targetUrl: string = selfRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
+            res: Buffer = await xs.read(targetUrl, this.opt),
+            data: IArcSelfRankResponse = JSON.parse(res.toString());
         return data;
     }
 }
