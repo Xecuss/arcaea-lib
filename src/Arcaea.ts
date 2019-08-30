@@ -20,9 +20,10 @@ const header: Object = {
 };
 
 export default class Arcaea{
-    private token: string = 'nX77k5v14ps2axIqGxHta2ONJNsnGb8gUVLeBG0LNeY=';
+    private token: string;
     private opt: any;
-    constructor(){
+    constructor(token: string){
+        this.token = token;
         let headers = Object.assign(header,{
             Authorization: "Bearer "+this.token
         });
