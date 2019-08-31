@@ -39,3 +39,27 @@ await arc.delFriend(friend_id);
 ```
 
 You can get friend_id in response of appregate or addfriend.
+
+### get friends Rank
+
+```typescript
+let res: IArcRankResponse = await arc.getFriendsRank(song_id,difficulty);
+```
+difficulty is a number in the range 0-2, 0 = past, 1 = present, 2 = future.
+
+You can find song_id from songList.
+
+### get world rank
+
+```typescript
+let res: IArcRankResponse = await arc.getWorldRank(song_id,difficulty);
+```
+
+Same as get friends rank.
+
+### get self rank
+
+```typescript
+let res: IArcSelfRankResponse = await arc.getSelfRank(song_id,difficulty);
+```
+Simular to get friends rank, there is an extra rank field in this response.
