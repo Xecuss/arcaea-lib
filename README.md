@@ -14,10 +14,18 @@ npm install arcaea-lib
 ```typescript
 import Arcaea from 'arcaea-lib'
 
-let arc: Arcaea = new Arcaea(token);
+let arc: Arcaea = new Arcaea(arg);
 ```
 
-This token is your arcaea token. login will be add later.
+The parameter contains a token field. It's not required, but if you do not provide token here, you should use login to get a token first.
+
+### login
+
+```typescript
+let token: string = await arc.login(username, password);
+```
+
+This method will return a token, you should save it for reuse.
 
 ### get user info
 
