@@ -30,7 +30,12 @@ interface IArcArg{
     userAgent?: string;
 }
 
-export default class Arcaea{
+export const enum ArcDifficulty{
+    Past = 0,
+    Present = 1,
+    Future = 2
+}
+export class Arcaea{
     private token: string;
     private deviceId: string;
     private opt: any;
@@ -95,21 +100,21 @@ export default class Arcaea{
             data: {success: boolean,friends: any[]} = JSON.parse(res);
         return data.success;
     }
-    public async getFriendsRank(song_id: string, difficulty: number): Promise<IArcRankResponse>{
+    public async getFriendsRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcRankResponse>{
         this.checkToken();
         let targetUrl: string = friendRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
             res: Buffer = await xs.read(targetUrl, this.opt),
             data: IArcRankResponse = JSON.parse(res.toString());
         return data;
     }
-    public async getWorldRank(song_id: string, difficulty: number): Promise<IArcRankResponse>{
+    public async getWorldRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcRankResponse>{
         this.checkToken();
         let targetUrl: string = worldRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
             res: Buffer = await xs.read(targetUrl, this.opt),
             data: IArcRankResponse = JSON.parse(res.toString());
         return data;
     }
-    public async getSelfRank(song_id: string, difficulty: number): Promise<IArcSelfRankResponse>{
+    public async getSelfRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcSelfRankResponse>{
         this.checkToken();
         let targetUrl: string = selfRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
             res: Buffer = await xs.read(targetUrl, this.opt),

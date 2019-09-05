@@ -12,7 +12,7 @@ npm install arcaea-lib
 ### import 
 
 ```typescript
-import Arcaea from 'arcaea-lib'
+import { Arcaea, ArcDifficulty } from 'arcaea-lib';
 
 let arc: Arcaea = new Arcaea(arg);
 ```
@@ -53,7 +53,7 @@ You can get friend_id in response of appregate or addfriend.
 ```typescript
 let res: IArcRankResponse = await arc.getFriendsRank(song_id,difficulty);
 ```
-difficulty is a number in the range 0-2, 0 = past, 1 = present, 2 = future.
+difficulty is a enumeration value.
 
 You can find song_id from songList.
 
