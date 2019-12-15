@@ -45,8 +45,8 @@ export class Arcaea{
         this.deviceId = arg.deviceId || '';
         let headers = Object.assign(header,{
             Authorization: "Bearer "+this.token,
-            AppVersion: arg.appVersion || '2.4.0',
-            'User-Agent': arg.userAgent || "Arc-mobile/2.4.0.1 CFNetwork/811.5.4 Darwin/16.7.0"
+            AppVersion: arg.appVersion || '2.4.7',
+            'User-Agent': arg.userAgent || "Arc-mobile/2.4.7.0 CFNetwork/811.5.4 Darwin/16.7.0"
         });
         this.opt = {
             headers: headers,
