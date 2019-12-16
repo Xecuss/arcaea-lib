@@ -13,8 +13,10 @@
   "author": "Xecus",
   "license": "SEE LICENSE IN LICENSE",
   "types": "build/Arcaea.d.ts",
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^12.12.17"
+  },
   "dependencies": {
-    "xs-io": "0.0.9"
+    "axios": "^0.19.0"
   }
 }

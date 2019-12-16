@@ -1,4 +1,4 @@
-import xs from 'xs-io';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse } from './Arcaea.interface';
 import { TokenNotFoundException } from './Arcaea.Exception';
 
@@ -49,8 +49,7 @@ export class Arcaea{
             'User-Agent': arg.userAgent || "Arc-mobile/2.4.7.0 CFNetwork/811.5.4 Darwin/16.7.0"
         });
         this.opt = {
-            headers: headers,
-            gzip: true
+            headers
         };
     }
     private checkToken(): void{
@@ -70,11 +69,10 @@ export class Arcaea{
                 DeviceId: this.deviceId
             }),
             loginOpt: any = {
-                headers: loginHeaders,
-                gzip: true
+                headers: loginHeaders
             },
-            res: string = await xs.post(loginUrl,'grant_type=client_credentials', loginOpt),
-            data: IArcLoginResponse = JSON.parse(res);
+            res: AxiosResponse = await axios.post(loginUrl,'grant_type=client_credentials', loginOpt),
+            data: IArcLoginResponse = res.data;
         if(data.success){
             this.token = data.token_type + ' ' + data.access_token;
             this.opt.headers.Authorization = this.token;
@@ -84,41 +82,41 @@ export class Arcaea{
     }
     public async appregate(): Promise<IArcAppregateResponse>{
         this.checkToken();
-        let res: Buffer = await xs.read(friendInfo, this.opt),
-            data: IArcAppregateResponse = JSON.parse(res.toString());
+        let res: AxiosResponse = await axios.get(friendInfo, this.opt),
+            data: IArcAppregateResponse = res.data;
         return data;
     }
     public async addFriend(friend_code: string): Promise<IArcAddResponse>{
         this.checkToken();
-        let res: string = await xs.post(addUrl, `friend_code=${friend_code}`, this.opt),
-            data: IArcAddResponse = JSON.parse(res);
+        let res: AxiosResponse = await axios.post(addUrl, `friend_code=${friend_code}`, this.opt),
+            data: IArcAddResponse = res.data;
         return data;
     }
-    public async delFriend(user_id:number): Promise<boolean>{
+    public async delFriend(user_id: number): Promise<boolean>{
         this.checkToken();
-        let res: string = await xs.post(delUrl, `friend_id=${user_id}`, this.opt),
-            data: {success: boolean,friends: any[]} = JSON.parse(res);
+        let res: AxiosResponse = await axios.post(delUrl, `friend_id=${user_id}`, this.opt),
+            data: {success: boolean,friends: any[]} = res.data;
         return data.success;
     }
     public async getFriendsRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcRankResponse>{
         this.checkToken();
         let targetUrl: string = friendRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
-            res: Buffer = await xs.read(targetUrl, this.opt),
-            data: IArcRankResponse = JSON.parse(res.toString());
+            res: AxiosResponse = await axios.get(targetUrl, this.opt),
+            data: IArcRankResponse = res.data;
         return data;
     }
     public async getWorldRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcRankResponse>{
         this.checkToken();
         let targetUrl: string = worldRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
-            res: Buffer = await xs.read(targetUrl, this.opt),
-            data: IArcRankResponse = JSON.parse(res.toString());
+            res: AxiosResponse = await axios.get(targetUrl, this.opt),
+            data: IArcRankResponse = res.data;
         return data;
     }
     public async getSelfRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcSelfRankResponse>{
         this.checkToken();
         let targetUrl: string = selfRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
-            res: Buffer = await xs.read(targetUrl, this.opt),
-            data: IArcSelfRankResponse = JSON.parse(res.toString());
+            res: AxiosResponse = await axios.get(targetUrl, this.opt),
+            data: IArcSelfRankResponse = res.data;
         return data;
     }
 }
