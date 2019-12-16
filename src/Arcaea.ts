@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse } from './Arcaea.interface';
 import { TokenNotFoundException } from './Arcaea.Exception';
 
