@@ -2,13 +2,13 @@ import axios, { AxiosResponse } from 'axios';
 import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse } from './Arcaea.interface';
 import { TokenNotFoundException } from './Arcaea.Exception';
 
-const loginUrl: string = 'https://arcapi.lowiro.com/8/auth/login',
-      addUrl: string = "https://arcapi.lowiro.com/8/friend/me/add",
-      delUrl: string = "https://arcapi.lowiro.com/8/friend/me/delete",
-      friendInfo: string = "https://arcapi.lowiro.com/8/compose/aggregate?calls=%5B%7B%20%22endpoint%22%3A%20%22user%2Fme%22%2C%20%22id%22%3A%200%20%7D%2C%20%7B%20%22endpoint%22%3A%20%22purchase%2Fbundle%2Fpack%22%2C%20%22id%22%3A%201%20%7D%5D",
-      friendRankUrl: string = "https://arcapi.lowiro.com/8/score/song/friend?start=0&limit=10",
-      worldRankUrl: string = "https://arcapi.lowiro.com/8/score/song?start=0&limit=20",
-      selfRankUrl : string= "https://arcapi.lowiro.com/8/score/song/me?start=4&limit=18";
+const loginUrl: string = 'https://arcapi.lowiro.com/10/auth/login',
+      addUrl: string = "https://arcapi.lowiro.com/10/friend/me/add",
+      delUrl: string = "https://arcapi.lowiro.com/10/friend/me/delete",
+      friendInfo: string = "https://arcapi.lowiro.com/10/compose/aggregate?calls=%5B%7B%20%22endpoint%22%3A%20%22user%2Fme%22%2C%20%22id%22%3A%200%20%7D%2C%20%7B%20%22endpoint%22%3A%20%22purchase%2Fbundle%2Fpack%22%2C%20%22id%22%3A%201%20%7D%5D",
+      friendRankUrl: string = "https://arcapi.lowiro.com/10/score/song/friend?start=0&limit=10",
+      worldRankUrl: string = "https://arcapi.lowiro.com/10/score/song?start=0&limit=20",
+      selfRankUrl : string= "https://arcapi.lowiro.com/10/score/song/me?start=4&limit=18";
 
 const header: Object = {
     "Accept-Encoding":"gzip, deflate",
@@ -45,8 +45,8 @@ export class Arcaea{
         this.deviceId = arg.deviceId || '';
         let headers = Object.assign(header,{
             Authorization: "Bearer "+this.token,
-            AppVersion: arg.appVersion || '2.4.7',
-            'User-Agent': arg.userAgent || "Arc-mobile/2.4.7.0 CFNetwork/811.5.4 Darwin/16.7.0"
+            AppVersion: arg.appVersion || '2.5.2',
+            'User-Agent': arg.userAgent || "Arc-mobile/2.5.2.0 CFNetwork/811.5.4 Darwin/16.7.0"
         });
         this.opt = {
             headers
