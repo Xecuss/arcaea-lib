@@ -14,7 +14,8 @@
   "license": "SEE LICENSE IN LICENSE",
   "types": "build/Arcaea.d.ts",
   "devDependencies": {
-    "@types/node": "^12.12.17"
+    "@types/node": "^12.12.17",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "axios": "^0.19.0"

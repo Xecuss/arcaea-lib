@@ -43,7 +43,7 @@ export class Arcaea{
         let arg: IArcArg = Arg || {};
         this.token = arg.token || '';
         this.deviceId = arg.deviceId || '';
-        let headers = Object.assign(header,{
+        let headers = Object.assign({}, header,{
             Authorization: "Bearer "+this.token,
             AppVersion: arg.appVersion || '2.5.3',
             'User-Agent': arg.userAgent || "Arc-mobile/2.5.3.1 CFNetwork/811.5.4 Darwin/16.7.0"
