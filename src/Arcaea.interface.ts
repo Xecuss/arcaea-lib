@@ -141,3 +141,10 @@ export interface IArcSelfRankResponse {
     success: boolean;
     value?: IArcSelfRankItem[];
 }
+export interface IArcPurchaseFriendResponse {
+    success: boolean;
+    value?: {
+        user_id: number;
+        max_friend: number;
+    }
+}

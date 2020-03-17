@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse } from './Arcaea.interface';
+import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse } from './Arcaea.interface';
 import { TokenNotFoundException } from './Arcaea.Exception';
 
 const loginUrl: string = 'https://arcapi.lowiro.com/10/auth/login',
@@ -8,7 +8,8 @@ const loginUrl: string = 'https://arcapi.lowiro.com/10/auth/login',
       friendInfo: string = "https://arcapi.lowiro.com/10/compose/aggregate?calls=%5B%7B%20%22endpoint%22%3A%20%22user%2Fme%22%2C%20%22id%22%3A%200%20%7D%2C%20%7B%20%22endpoint%22%3A%20%22purchase%2Fbundle%2Fpack%22%2C%20%22id%22%3A%201%20%7D%5D",
       friendRankUrl: string = "https://arcapi.lowiro.com/10/score/song/friend?start=0&limit=10",
       worldRankUrl: string = "https://arcapi.lowiro.com/10/score/song?start=0&limit=20",
-      selfRankUrl : string= "https://arcapi.lowiro.com/10/score/song/me?start=4&limit=18";
+      selfRankUrl : string= "https://arcapi.lowiro.com/10/score/song/me?start=4&limit=18",
+      purchaseUrl: string = "https://arcapi.lowiro.com/10/purchase/me/friend/fragment";
 
 const header: Object = {
     "Accept-Encoding":"gzip, deflate",
@@ -17,6 +18,7 @@ const header: Object = {
     "Accept":"*/*",
     "Connection":"keep-alive",
     "Proxy-Connection":"keep-alive",
+    "Platform": "ios"
 };
 
 function btoa(src: string): string{
@@ -118,5 +120,11 @@ export class Arcaea{
             res: AxiosResponse = await axios.get(targetUrl, this.opt),
             data: IArcSelfRankResponse = res.data;
         return data;
+    }
+
+    public async purchaseFriend(): Promise<IArcPurchaseFriendResponse>{
+        this.checkToken();
+        let res: AxiosResponse<IArcPurchaseFriendResponse> = await axios.post(purchaseUrl, '', this.opt);
+        return res.data;
     }
 }
