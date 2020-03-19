@@ -2,14 +2,16 @@ import axios, { AxiosResponse } from 'axios';
 import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse } from './Arcaea.interface';
 import { TokenNotFoundException } from './Arcaea.Exception';
 
-const loginUrl: string = 'https://arcapi.lowiro.com/10/auth/login',
-      addUrl: string = "https://arcapi.lowiro.com/10/friend/me/add",
-      delUrl: string = "https://arcapi.lowiro.com/10/friend/me/delete",
-      friendInfo: string = "https://arcapi.lowiro.com/10/compose/aggregate?calls=%5B%7B%20%22endpoint%22%3A%20%22user%2Fme%22%2C%20%22id%22%3A%200%20%7D%2C%20%7B%20%22endpoint%22%3A%20%22purchase%2Fbundle%2Fpack%22%2C%20%22id%22%3A%201%20%7D%5D",
-      friendRankUrl: string = "https://arcapi.lowiro.com/10/score/song/friend?start=0&limit=10",
-      worldRankUrl: string = "https://arcapi.lowiro.com/10/score/song?start=0&limit=20",
-      selfRankUrl : string= "https://arcapi.lowiro.com/10/score/song/me?start=4&limit=18",
-      purchaseUrl: string = "https://arcapi.lowiro.com/10/purchase/me/friend/fragment";
+const baseUrl: string = 'https://arcapi.lowiro.com/';
+
+const loginUrl: string = '/auth/login',
+      addUrl: string = "/friend/me/add",
+      delUrl: string = "/friend/me/delete",
+      friendInfo: string = "/compose/aggregate?calls=%5B%7B%20%22endpoint%22%3A%20%22user%2Fme%22%2C%20%22id%22%3A%200%20%7D%2C%20%7B%20%22endpoint%22%3A%20%22purchase%2Fbundle%2Fpack%22%2C%20%22id%22%3A%201%20%7D%5D",
+      friendRankUrl: string = "/score/song/friend?start=0",
+      worldRankUrl: string = "/score/song?start=0&limit=20",
+      selfRankUrl : string= "/score/song/me?start=4&limit=18",
+      purchaseUrl: string = "/purchase/me/friend/fragment";
 
 const header: Object = {
     "Accept-Encoding":"gzip, deflate",
@@ -30,6 +32,7 @@ interface IArcArg{
     deviceId?: string;
     appVersion?: string;
     userAgent?: string;
+    apiVersion?: string;
 }
 
 export const enum ArcDifficulty{
@@ -41,10 +44,13 @@ export class Arcaea{
     private token: string;
     private deviceId: string;
     private opt: any;
+    private apiVersion: string;
+
     constructor(Arg?: IArcArg){
         let arg: IArcArg = Arg || {};
         this.token = arg.token || '';
         this.deviceId = arg.deviceId || '';
+        this.apiVersion = arg.apiVersion || '10';
         let headers = Object.assign({}, header,{
             Authorization: "Bearer "+this.token,
             AppVersion: arg.appVersion || '2.5.3',
@@ -73,7 +79,7 @@ export class Arcaea{
             loginOpt: any = {
                 headers: loginHeaders
             },
-            res: AxiosResponse = await axios.post(loginUrl,'grant_type=client_credentials', loginOpt),
+            res: AxiosResponse = await axios.post(`${baseUrl}${this.apiVersion}${loginUrl}`,'grant_type=client_credentials', loginOpt),
             data: IArcLoginResponse = res.data;
         if(data.success){
             this.token = data.token_type + ' ' + data.access_token;
@@ -84,39 +90,40 @@ export class Arcaea{
     }
     public async appregate(): Promise<IArcAppregateResponse>{
         this.checkToken();
-        let res: AxiosResponse = await axios.get(friendInfo, this.opt),
+        let res: AxiosResponse = await axios.get(`${baseUrl}${this.apiVersion}${friendInfo}`, this.opt),
             data: IArcAppregateResponse = res.data;
         return data;
     }
     public async addFriend(friend_code: string): Promise<IArcAddResponse>{
         this.checkToken();
-        let res: AxiosResponse = await axios.post(addUrl, `friend_code=${friend_code}`, this.opt),
+        let res: AxiosResponse = await axios.post(`${baseUrl}${this.apiVersion}${addUrl}`, `friend_code=${friend_code}`, this.opt),
             data: IArcAddResponse = res.data;
         return data;
     }
     public async delFriend(user_id: number): Promise<boolean>{
         this.checkToken();
-        let res: AxiosResponse = await axios.post(delUrl, `friend_id=${user_id}`, this.opt),
+        let res: AxiosResponse = await axios.post(`${baseUrl}${this.apiVersion}${delUrl}`, `friend_id=${user_id}`, this.opt),
             data: {success: boolean,friends: any[]} = res.data;
         return data.success;
     }
-    public async getFriendsRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcRankResponse>{
+    public async getFriendsRank(song_id: string, difficulty: ArcDifficulty, limit?: number): Promise<IArcRankResponse>{
         this.checkToken();
-        let targetUrl: string = friendRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
+        let limNum = limit || 10;
+        let targetUrl: string = `${baseUrl}${this.apiVersion}${friendRankUrl}` + `&limit=${limNum}&song_id=${song_id}&difficulty=${difficulty}`,
             res: AxiosResponse = await axios.get(targetUrl, this.opt),
             data: IArcRankResponse = res.data;
         return data;
     }
     public async getWorldRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcRankResponse>{
         this.checkToken();
-        let targetUrl: string = worldRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
+        let targetUrl: string = `${baseUrl}${this.apiVersion}${worldRankUrl}` + `&song_id=${song_id}&difficulty=${difficulty}`,
             res: AxiosResponse = await axios.get(targetUrl, this.opt),
             data: IArcRankResponse = res.data;
         return data;
     }
     public async getSelfRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcSelfRankResponse>{
         this.checkToken();
-        let targetUrl: string = selfRankUrl + `&song_id=${song_id}&difficulty=${difficulty}`,
+        let targetUrl: string = `${baseUrl}${this.apiVersion}${selfRankUrl}` + `&song_id=${song_id}&difficulty=${difficulty}`,
             res: AxiosResponse = await axios.get(targetUrl, this.opt),
             data: IArcSelfRankResponse = res.data;
         return data;
@@ -124,7 +131,7 @@ export class Arcaea{
 
     public async purchaseFriend(): Promise<IArcPurchaseFriendResponse>{
         this.checkToken();
-        let res: AxiosResponse<IArcPurchaseFriendResponse> = await axios.post(purchaseUrl, '', this.opt);
+        let res: AxiosResponse<IArcPurchaseFriendResponse> = await axios.post(`${baseUrl}${this.apiVersion}${purchaseUrl}`, '', this.opt);
         return res.data;
     }
 }
