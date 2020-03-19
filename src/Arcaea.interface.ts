@@ -66,16 +66,25 @@ export interface IArcAppregate {
     next_fragstam_ts: number;
     max_stamina_ts: number;
     stamina: number;
-    world_songs: [];
+    world_songs: string[];
     singles: [];
     packs: [];
     characters: number[];
-    cores: [];
+    cores: IArcCoreItem[];
     recent_score: [];
     max_friend: number;
     rating: number;
     join_date: number;
+    is_locked_name_duplicate: boolean;
+    prog_boost: number;
 }
+
+export interface IArcCoreItem{
+    core_type: string;
+    amount: number;
+    _id: string;
+}
+
 export interface IArcPackInfo {
     name: string;
     items: IArcPackItem[];
