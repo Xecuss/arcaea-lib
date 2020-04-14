@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
-import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse } from './Arcaea.interface';
+import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse, IArcRegisteredResponse, IArcRegisteredResult } from './Arcaea.interface';
 import { TokenNotFoundException } from './Arcaea.Exception';
+import { v4 as uuid } from 'uuid';
 
 const baseUrl: string = 'https://arcapi.lowiro.com/';
 
@@ -11,7 +12,8 @@ const loginUrl: string = '/auth/login',
       friendRankUrl: string = "/score/song/friend?start=0",
       worldRankUrl: string = "/score/song?start=0&limit=20",
       selfRankUrl : string= "/score/song/me?start=4&limit=18",
-      purchaseUrl: string = "/purchase/me/friend/fragment";
+      purchaseUrl: string = "/purchase/me/friend/fragment",
+      registeredUrl: string = "/user/";
 
 const header: Object = {
     "Accept-Encoding":"gzip, deflate",
@@ -80,6 +82,42 @@ export class Arcaea{
             this.selfId = res.value[0].value.user_id;
             this.opt.headers['i'] = this.selfId;
         }
+    }
+
+    public async registered(name: string, password: string, email: string): Promise<IArcRegisteredResult>{
+        let regHeaders = Object.assign({}, this.opt.headers, {
+                'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
+            }),
+            regOpt: any = {
+                headers: regHeaders
+            },
+            device_id = uuid().toUpperCase(),
+            requestStr = `name=${encodeURIComponent(name)}&password=${encodeURIComponent(password)}&email=${encodeURIComponent(email)}&device_id=${device_id}&platform=ios`;
+        
+        delete regHeaders['Authorization'];
+
+        let res = await axios.post(`${baseUrl}${this.apiVersion}${registeredUrl}`, requestStr, regOpt),
+            data: IArcRegisteredResponse= res.data;
+
+        if(data.value){
+
+            this.token = data.value.access_token;
+            this.opt.headers.Authorization = "Bearer "+ this.token;
+            this.opt.headers['i'] = data.value.user_id;
+
+            return {
+                success: true,
+                access_token: this.token,
+                device_id,
+                user_id: data.value.user_id
+            };
+        }
+        return {
+            success: false,
+            access_token: '',
+            device_id: '',
+            user_id: -1
+        };
     }
 
     public async login(name: string, pass: string): Promise<string>{

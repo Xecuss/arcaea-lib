@@ -157,3 +157,18 @@ export interface IArcPurchaseFriendResponse {
         max_friend: number;
     }
 }
+
+export interface IArcRegisteredResponse{
+    success: boolean;
+    value?: {
+        user_id: number;
+        access_token: string;
+    }
+}
+
+export interface IArcRegisteredResult{
+    success: boolean;
+    user_id: number;
+    access_token: string;
+    device_id: string;
+}
