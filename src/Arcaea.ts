@@ -3,7 +3,7 @@ import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankR
 import { TokenNotFoundException } from './Arcaea.Exception';
 import { v4 as uuid } from 'uuid';
 
-const baseUrl: string = 'https://arcapi.lowiro.com/';
+const baseUrl: string = 'https://arcapi.lowiro.com/coffee/';
 
 const loginUrl: string = '/auth/login',
       addUrl: string = "/friend/me/add",
@@ -53,11 +53,11 @@ export class Arcaea{
         let arg: IArcArg = Arg || {};
         this.token = arg.token || '';
         this.deviceId = arg.deviceId || '';
-        this.apiVersion = arg.apiVersion || '11';
+        this.apiVersion = arg.apiVersion || '12';
         let headers = Object.assign({}, header,{
             Authorization: "Bearer "+ this.token,
-            AppVersion: arg.appVersion || '2.6.0',
-            'User-Agent': arg.userAgent || "Arc-mobile/2.6.0.1 CFNetwork/811.5.4 Darwin/16.7.0"
+            AppVersion: arg.appVersion || '3.0.0',
+            'User-Agent': arg.userAgent || "Arc-mobile/3.0.0.2 CFNetwork/811.5.4 Darwin/16.7.0"
         });
         this.opt = {
             headers
@@ -84,6 +84,10 @@ export class Arcaea{
         }
     }
 
+    public static createUUID(): string{
+        return uuid().toUpperCase();
+    }
+
     public async registered(name: string, password: string, email: string): Promise<IArcRegisteredResult>{
         let regHeaders = Object.assign({}, this.opt.headers, {
                 'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
@@ -91,7 +95,7 @@ export class Arcaea{
             regOpt: any = {
                 headers: regHeaders
             },
-            device_id = uuid().toUpperCase(),
+            device_id = Arcaea.createUUID(),
             requestStr = `name=${encodeURIComponent(name)}&password=${encodeURIComponent(password)}&email=${encodeURIComponent(email)}&device_id=${device_id}&platform=ios`;
         
         delete regHeaders['Authorization'];
