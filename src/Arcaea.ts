@@ -40,7 +40,8 @@ interface IArcArg{
 export const enum ArcDifficulty{
     Past = 0,
     Present = 1,
-    Future = 2
+    Future = 2,
+    Beyond = 3
 }
 export class Arcaea{
     private token: string;
