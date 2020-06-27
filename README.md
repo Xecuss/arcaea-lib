@@ -2,6 +2,8 @@
 
 A simple Arcaea lib, It can help you to simulate various operations in Arcaea.
 
+[![NPM](https://nodei.co/npm/arcaea-lib.png)](https://www.npmjs.com/package/arcaea-lib)
+
 ## install
 ```shell
 npm install arcaea-lib
