@@ -49,7 +49,7 @@ export interface IArcSetting {
     is_hide_rating: boolean
 }
 
-export interface IArcAppregate {
+export interface IArcAggregate {
     is_aprilfools: boolean;
     curr_available_maps: string[];
     character_stats: IArcCharacter[];
@@ -98,12 +98,12 @@ export interface IArcPackItem {
     type: string;
     is_available: boolean;
 }
-export interface IArcAppregateResponse {
+export interface IArcAggregateResponse {
     success: boolean;
     value?: [
         {
             id: number;
-            value: IArcAppregate;
+            value: IArcAggregate;
         },
         {
             id: number;

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { IArcAppregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse, IArcRegisteredResponse, IArcRegisteredResult } from './Arcaea.interface';
+import { IArcAggregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse, IArcRegisteredResponse, IArcRegisteredResult } from './Arcaea.interface';
 import { TokenNotFoundException } from './Arcaea.Exception';
 import { v4 as uuid } from 'uuid';
 
@@ -57,8 +57,8 @@ export class Arcaea{
         this.apiVersion = arg.apiVersion || '12';
         let headers = Object.assign({}, header,{
             Authorization: "Bearer "+ this.token,
-            AppVersion: arg.appVersion || '3.0.0',
-            'User-Agent': arg.userAgent || "Arc-mobile/3.0.0.2 CFNetwork/811.5.4 Darwin/16.7.0"
+            AppVersion: arg.appVersion || '3.0.2',
+            'User-Agent': arg.userAgent || "Arc-mobile/3.0.2.1 CFNetwork/811.5.4 Darwin/16.7.0"
         });
         this.opt = {
             headers
@@ -76,7 +76,7 @@ export class Arcaea{
         return `Basic ${authStr}`;
     }
 
-    private appregateCheck(res: IArcAppregateResponse){
+    private aggregateCheck(res: IArcAggregateResponse){
         if(!res.value) return;
 
         if(this.selfId === -1){
@@ -144,12 +144,12 @@ export class Arcaea{
         return '';
     }
 
-    public async appregate(): Promise<IArcAppregateResponse>{
+    public async aggregate(): Promise<IArcAggregateResponse>{
         this.checkToken();
         let res: AxiosResponse = await axios.get(`${baseUrl}${this.apiVersion}${friendInfo}`, this.opt),
-            data: IArcAppregateResponse = res.data;
+            data: IArcAggregateResponse = res.data;
 
-        this.appregateCheck(data);
+        this.aggregateCheck(data);
 
         return data;
     }
