@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { IArcAggregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse, IArcRegisteredResponse, IArcRegisteredResult } from './Arcaea.interface';
 import { TokenNotFoundException } from './Arcaea.Exception';
 import { v4 as uuid } from 'uuid';
@@ -46,7 +46,7 @@ export const enum ArcDifficulty{
 export class Arcaea{
     private token: string;
     private deviceId: string;
-    private opt: any;
+    private opt: AxiosRequestConfig;
     private apiVersion: string;
     private selfId: number = -1;
 
@@ -144,10 +144,34 @@ export class Arcaea{
         return '';
     }
 
-    public async aggregate(): Promise<IArcAggregateResponse>{
+    public async get<R>(url: string, params?: any): Promise<R>{
         this.checkToken();
-        let res: AxiosResponse = await axios.get(`${baseUrl}${this.apiVersion}${friendInfo}`, this.opt),
-            data: IArcAggregateResponse = res.data;
+
+        let trueConfig: AxiosRequestConfig = this.opt;
+
+        if(params){
+            trueConfig = Object.assign({}, this.opt, {
+                params
+            });
+        }
+
+        let response: AxiosResponse = await axios.get(url, trueConfig),
+            result: R = response.data;
+
+        return result;
+    }
+
+    public async post<R>(url: string, data: string){
+        this.checkToken();
+
+        let response: AxiosResponse = await axios.post(url, data, this.opt),
+            result: R = response.data;
+
+        return result;
+    }
+
+    public async aggregate(): Promise<IArcAggregateResponse>{
+        let data = await this.get<IArcAggregateResponse>(`${baseUrl}${this.apiVersion}${friendInfo}`);
 
         this.aggregateCheck(data);
 
@@ -155,47 +179,49 @@ export class Arcaea{
     }
 
     public async addFriend(friend_code: string): Promise<IArcAddResponse>{
-        this.checkToken();
-        let res: AxiosResponse = await axios.post(`${baseUrl}${this.apiVersion}${addUrl}`, `friend_code=${friend_code}`, this.opt),
-            data: IArcAddResponse = res.data;
+        let data = await this.post<IArcAddResponse>(`${baseUrl}${this.apiVersion}${addUrl}`, `friend_code=${friend_code}`);
         return data;
     }
 
     public async delFriend(user_id: number): Promise<boolean>{
-        this.checkToken();
-        let res: AxiosResponse = await axios.post(`${baseUrl}${this.apiVersion}${delUrl}`, `friend_id=${user_id}`, this.opt),
-            data: {success: boolean,friends: any[]} = res.data;
+        type delResponse = {success: boolean,friends: any[]};
+
+        let data: delResponse = await this.post<delResponse>(`${baseUrl}${this.apiVersion}${delUrl}`, `friend_id=${user_id}`);
         return data.success;
     }
 
     public async getFriendsRank(song_id: string, difficulty: ArcDifficulty, limit?: number): Promise<IArcRankResponse>{
-        this.checkToken();
         let limNum = limit || 10;
-        let targetUrl: string = `${baseUrl}${this.apiVersion}${friendRankUrl}` + `&limit=${limNum}&song_id=${song_id}&difficulty=${difficulty}`,
-            res: AxiosResponse = await axios.get(targetUrl, this.opt),
-            data: IArcRankResponse = res.data;
+
+        let data = await this.get<IArcRankResponse>(`${baseUrl}${this.apiVersion}${friendRankUrl}`, {
+                limit: limNum,
+                song_id,
+                difficulty
+            });
+        
         return data;
     }
 
     public async getWorldRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcRankResponse>{
-        this.checkToken();
-        let targetUrl: string = `${baseUrl}${this.apiVersion}${worldRankUrl}` + `&song_id=${song_id}&difficulty=${difficulty}`,
-            res: AxiosResponse = await axios.get(targetUrl, this.opt),
-            data: IArcRankResponse = res.data;
+        let data = await this.get<IArcRankResponse>(`${baseUrl}${this.apiVersion}${worldRankUrl}`, {
+            song_id,
+            difficulty
+        });
+
         return data;
     }
 
     public async getSelfRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcSelfRankResponse>{
-        this.checkToken();
-        let targetUrl: string = `${baseUrl}${this.apiVersion}${selfRankUrl}` + `&song_id=${song_id}&difficulty=${difficulty}`,
-            res: AxiosResponse = await axios.get(targetUrl, this.opt),
-            data: IArcSelfRankResponse = res.data;
+        let data = await this.get<IArcSelfRankResponse>(`${baseUrl}${this.apiVersion}${selfRankUrl}`, {
+            song_id,
+            difficulty
+        });
+
         return data;
     }
 
     public async purchaseFriend(): Promise<IArcPurchaseFriendResponse>{
-        this.checkToken();
-        let res: AxiosResponse<IArcPurchaseFriendResponse> = await axios.post(`${baseUrl}${this.apiVersion}${purchaseUrl}`, '', this.opt);
-        return res.data;
+        let data = await this.post<IArcPurchaseFriendResponse>(`${baseUrl}${this.apiVersion}${purchaseUrl}`, '');
+        return data;
     }
 }
