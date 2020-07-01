@@ -9,9 +9,9 @@ const loginUrl: string = '/auth/login',
       addUrl: string = "/friend/me/add",
       delUrl: string = "/friend/me/delete",
       friendInfo: string = "/compose/aggregate?calls=%5B%7B%20%22endpoint%22%3A%20%22user%2Fme%22%2C%20%22id%22%3A%200%20%7D%2C%20%7B%20%22endpoint%22%3A%20%22purchase%2Fbundle%2Fpack%22%2C%20%22id%22%3A%201%20%7D%5D",
-      friendRankUrl: string = "/score/song/friend?start=0",
-      worldRankUrl: string = "/score/song?start=0&limit=20",
-      selfRankUrl : string= "/score/song/me?start=4&limit=18",
+      friendRankUrl: string = "/score/song/friend",
+      worldRankUrl: string = "/score/song",
+      selfRankUrl : string= "/score/song/me",
       purchaseUrl: string = "/purchase/me/friend/fragment",
       registeredUrl: string = "/user/";
 
@@ -190,11 +190,11 @@ export class Arcaea{
         return data.success;
     }
 
-    public async getFriendsRank(song_id: string, difficulty: ArcDifficulty, limit?: number): Promise<IArcRankResponse>{
-        let limNum = limit || 10;
+    public async getFriendsRank(song_id: string, difficulty: ArcDifficulty, limit: number = 10, start: number = 0): Promise<IArcRankResponse>{
 
         let data = await this.get<IArcRankResponse>(`${baseUrl}${this.apiVersion}${friendRankUrl}`, {
-                limit: limNum,
+                start,
+                limit,
                 song_id,
                 difficulty
             });
@@ -202,8 +202,10 @@ export class Arcaea{
         return data;
     }
 
-    public async getWorldRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcRankResponse>{
+    public async getWorldRank(song_id: string, difficulty: ArcDifficulty, start: number = 0, limit: number = 20): Promise<IArcRankResponse>{
         let data = await this.get<IArcRankResponse>(`${baseUrl}${this.apiVersion}${worldRankUrl}`, {
+            start,
+            limit,
             song_id,
             difficulty
         });
@@ -211,8 +213,10 @@ export class Arcaea{
         return data;
     }
 
-    public async getSelfRank(song_id: string, difficulty: ArcDifficulty): Promise<IArcSelfRankResponse>{
+    public async getSelfRank(song_id: string, difficulty: ArcDifficulty, start: number = 4, limit: number = 18): Promise<IArcSelfRankResponse>{
         let data = await this.get<IArcSelfRankResponse>(`${baseUrl}${this.apiVersion}${selfRankUrl}`, {
+            start,
+            limit,
             song_id,
             difficulty
         });
