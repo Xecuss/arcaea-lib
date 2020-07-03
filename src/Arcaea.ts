@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
-import { IArcAggregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse, IArcRegisteredResponse, IArcRegisteredResult } from './Arcaea.interface';
-import { ARCAEA_ENDPOINT, IArcAggregateEndpointItem } from './Arcaea.interface';
+import { IArcAggregateValueItem, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse, IArcRegisteredResponse, IArcRegisteredResult, IArcAggregateResponse } from './Arcaea.interface';
+import { ARCAEA_ENDPOINT, IArcAggregateEndpointItem, IArcSelfInfo, IArcPackInfo } from './Arcaea.interface';
 import { TokenNotFoundException, DeviceIdNotFoundException } from './Arcaea.Exception';
 import { v4 as uuid } from 'uuid';
 
@@ -16,6 +16,11 @@ const loginUrl: string = 'auth/login',
 const defaultAggregateCall: Array<IArcAggregateEndpointItem> = [
     { endPoint: ARCAEA_ENDPOINT.selfInfo },
     { endPoint: ARCAEA_ENDPOINT.packInfo }
+];
+
+type defaultAggregateValue = [
+    IArcAggregateValueItem<IArcSelfInfo>,
+    IArcAggregateValueItem<IArcPackInfo>
 ];
 
 const header: Object = {
@@ -86,14 +91,14 @@ export class Arcaea{
         return `Basic ${authStr}`;
     }
 
-    private aggregateCheck(res: IArcAggregateResponse){
+    /*private aggregateCheck(res: IArcAggregateResponse<defaultAggregateValue>){
         if(!res.value) return;
 
         if(this.selfId === -1){
             this.selfId = res.value[0].value.user_id;
             this.opt.headers['i'] = this.selfId;
         }
-    }
+    }*/
 
     public createDeviceId(): string{
         let deviceId = uuid().toUpperCase();
@@ -118,7 +123,7 @@ export class Arcaea{
         let res = await axios.post(`${baseUrl}/${this.apiVersion}/${registeredUrl}`, requestStr, regOpt),
             data: IArcRegisteredResponse= res.data;
 
-        if(data.value){
+        if(data.success){
 
             this.token = data.value.access_token;
             this.opt.headers.Authorization = "Bearer "+ this.token;
@@ -195,7 +200,7 @@ export class Arcaea{
         return (endpoint.endPoint + parString).slice(0, -1);
     }
 
-    public async aggregate(endpoints: Array<IArcAggregateEndpointItem> = defaultAggregateCall): Promise<IArcAggregateResponse>{
+    public async aggregate<T = defaultAggregateValue>(endpoints: Array<IArcAggregateEndpointItem> = defaultAggregateCall): Promise<IArcAggregateResponse<T>>{
         type endpointItem = { id: number, endpoint: string };
 
         let aggregateCall: Array<endpointItem> = [], id = 0;
@@ -206,11 +211,11 @@ export class Arcaea{
             });
             id++;
         }
-        let data = await this.get<IArcAggregateResponse>(`${baseUrl}/${this.apiVersion}/${friendInfo}`, {
+        let data = await this.get<IArcAggregateResponse<T>>(`${baseUrl}/${this.apiVersion}/${friendInfo}`, {
             calls: JSON.stringify(aggregateCall)
         });
 
-        this.aggregateCheck(data);
+        //this.aggregateCheck(data);
 
         return data;
     }

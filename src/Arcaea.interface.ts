@@ -101,14 +101,10 @@ export interface IArcPackItem {
     type: string;
     is_available: boolean;
 }
-export interface IArcAggregateResponse<T> {
-    success: boolean;
-    value?: [
-        {
-            id: number;
-            value: T;
-        }
-    ];
+
+export interface IArcAggregateValueItem<T>{
+    id: number;
+    value: T;
 }
 export interface IArcAddResponse {
     success: boolean;
@@ -138,32 +134,35 @@ export interface IArcRankItem {
     is_skill_sealed: boolean;
     is_char_uncapped: boolean;
 }
+
+
+interface IArcFailResponse{
+    success: false;
+}
+interface IArcSuccessResponse<T>{
+    success: true;
+    value: T
+}
+
+type IArcResponse<T> = IArcFailResponse | IArcSuccessResponse<T>;
+
 export interface IArcSelfRankItem extends IArcRankItem {
     rank: number;
 }
-export interface IArcRankResponse {
-    success: boolean;
-    value?: IArcRankItem[];
-}
-export interface IArcSelfRankResponse {
-    success: boolean;
-    value?: IArcSelfRankItem[];
-}
-export interface IArcPurchaseFriendResponse {
-    success: boolean;
-    value?: {
-        user_id: number;
-        max_friend: number;
-    }
-}
+export type IArcRankResponse = IArcResponse<IArcRankItem[]>;
+export type IArcSelfRankResponse = IArcResponse<IArcSelfRankItem[]>;
 
-export interface IArcRegisteredResponse{
-    success: boolean;
-    value?: {
-        user_id: number;
-        access_token: string;
-    }
-}
+export type IArcPurchaseFriendResponse = IArcResponse<{
+    user_id: number;
+    max_friend: number;
+}>;
+
+export type IArcRegisteredResponse = IArcResponse<{
+    user_id: number;
+    access_token: string;
+}>
+
+export type IArcAggregateResponse<T> = IArcResponse<T>;
 
 export interface IArcRegisteredResult{
     success: boolean;
