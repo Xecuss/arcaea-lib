@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { IArcAggregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse, IArcRegisteredResponse, IArcRegisteredResult } from './Arcaea.interface';
-import { TokenNotFoundException } from './Arcaea.Exception';
+import { TokenNotFoundException, DeviceIdNotFoundException } from './Arcaea.Exception';
 import { v4 as uuid } from 'uuid';
 
 const baseUrl: string = 'https://arcapi.lowiro.com/coffee/';
@@ -71,6 +71,13 @@ export class Arcaea{
         throw new TokenNotFoundException();
     }
 
+    private checkDeviceId(): void{
+        if(this.token){
+            return;
+        }
+        throw new DeviceIdNotFoundException();
+    }
+
     private createLoginAuth(name: string, pass: string): string{
         let authStr = btoa(unescape(encodeURIComponent(`${name}:${pass}`)));
         return `Basic ${authStr}`;
@@ -85,18 +92,22 @@ export class Arcaea{
         }
     }
 
-    public static createUUID(): string{
-        return uuid().toUpperCase();
+    public createDeviceId(): string{
+        let deviceId = uuid().toUpperCase();
+        this.deviceId = deviceId;
+        return deviceId;
     }
 
     public async registered(name: string, password: string, email: string): Promise<IArcRegisteredResult>{
+        this.checkDeviceId();
+
         let regHeaders = Object.assign({}, this.opt.headers, {
                 'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
             }),
             regOpt: any = {
                 headers: regHeaders
             },
-            device_id = Arcaea.createUUID(),
+            device_id = this.deviceId,
             requestStr = `name=${encodeURIComponent(name)}&password=${encodeURIComponent(password)}&email=${encodeURIComponent(email)}&device_id=${device_id}&platform=ios`;
         
         delete regHeaders['Authorization'];
@@ -113,19 +124,19 @@ export class Arcaea{
             return {
                 success: true,
                 access_token: this.token,
-                device_id,
                 user_id: data.value.user_id
             };
         }
         return {
             success: false,
             access_token: '',
-            device_id: '',
             user_id: -1
         };
     }
 
     public async login(name: string, pass: string): Promise<string>{
+        this.checkDeviceId();
+
         let auth = this.createLoginAuth(name, pass),
             loginHeaders = Object.assign({}, this.opt.headers, {
                 Authorization: auth,

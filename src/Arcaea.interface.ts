@@ -170,5 +170,4 @@ export interface IArcRegisteredResult{
     success: boolean;
     user_id: number;
     access_token: string;
-    device_id: string;
 }
