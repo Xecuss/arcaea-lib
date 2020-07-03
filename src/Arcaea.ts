@@ -1,19 +1,22 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { IArcAggregateResponse, IArcAddResponse, IArcRankResponse, IArcSelfRankResponse, IArcLoginResponse, IArcPurchaseFriendResponse, IArcRegisteredResponse, IArcRegisteredResult } from './Arcaea.interface';
+import { ARCAEA_ENDPOINT, IArcAggregateEndpointItem } from './Arcaea.interface';
 import { TokenNotFoundException, DeviceIdNotFoundException } from './Arcaea.Exception';
 import { v4 as uuid } from 'uuid';
 
-const baseUrl: string = 'https://arcapi.lowiro.com/coffee/';
+const baseUrl: string = 'https://arcapi.lowiro.com/coffee';
 
-const loginUrl: string = '/auth/login',
-      addUrl: string = "/friend/me/add",
-      delUrl: string = "/friend/me/delete",
-      friendInfo: string = "/compose/aggregate?calls=%5B%7B%20%22endpoint%22%3A%20%22user%2Fme%22%2C%20%22id%22%3A%200%20%7D%2C%20%7B%20%22endpoint%22%3A%20%22purchase%2Fbundle%2Fpack%22%2C%20%22id%22%3A%201%20%7D%5D",
-      friendRankUrl: string = "/score/song/friend",
-      worldRankUrl: string = "/score/song",
-      selfRankUrl : string= "/score/song/me",
-      purchaseUrl: string = "/purchase/me/friend/fragment",
-      registeredUrl: string = "/user/";
+const loginUrl: string = 'auth/login',
+      addUrl: string = "friend/me/add",
+      delUrl: string = "friend/me/delete",
+      friendInfo: string = "compose/aggregate",
+      purchaseUrl: string = "purchase/me/friend/fragment",
+      registeredUrl: string = "user/";
+
+const defaultAggregateCall: Array<IArcAggregateEndpointItem> = [
+    { endPoint: ARCAEA_ENDPOINT.selfInfo },
+    { endPoint: ARCAEA_ENDPOINT.packInfo }
+];
 
 const header: Object = {
     "Accept-Encoding":"gzip, deflate",
@@ -112,7 +115,7 @@ export class Arcaea{
         
         delete regHeaders['Authorization'];
 
-        let res = await axios.post(`${baseUrl}${this.apiVersion}${registeredUrl}`, requestStr, regOpt),
+        let res = await axios.post(`${baseUrl}/${this.apiVersion}/${registeredUrl}`, requestStr, regOpt),
             data: IArcRegisteredResponse= res.data;
 
         if(data.value){
@@ -145,7 +148,7 @@ export class Arcaea{
             loginOpt: any = {
                 headers: loginHeaders
             },
-            res: AxiosResponse = await axios.post(`${baseUrl}${this.apiVersion}${loginUrl}`,'grant_type=client_credentials', loginOpt),
+            res: AxiosResponse = await axios.post(`${baseUrl}/${this.apiVersion}/${loginUrl}`,'grant_type=client_credentials', loginOpt),
             data: IArcLoginResponse = res.data;
         if(data.success){
             this.token = data.token_type + ' ' + data.access_token;
@@ -181,8 +184,31 @@ export class Arcaea{
         return result;
     }
 
-    public async aggregate(): Promise<IArcAggregateResponse>{
-        let data = await this.get<IArcAggregateResponse>(`${baseUrl}${this.apiVersion}${friendInfo}`);
+    private endPoint2String(endpoint: IArcAggregateEndpointItem){
+        let { params } = endpoint;
+        if(params === undefined) return endpoint.endPoint;
+        
+        let parString = '?';
+        for(let k in params){
+            parString += `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}&`;
+        }
+        return (endpoint.endPoint + parString).slice(0, -1);
+    }
+
+    public async aggregate(endpoints: Array<IArcAggregateEndpointItem> = defaultAggregateCall): Promise<IArcAggregateResponse>{
+        type endpointItem = { id: number, endpoint: string };
+
+        let aggregateCall: Array<endpointItem> = [], id = 0;
+        for(let item of endpoints){
+            aggregateCall.push({
+                id,
+                endpoint: this.endPoint2String(item)
+            });
+            id++;
+        }
+        let data = await this.get<IArcAggregateResponse>(`${baseUrl}/${this.apiVersion}/${friendInfo}`, {
+            calls: JSON.stringify(aggregateCall)
+        });
 
         this.aggregateCheck(data);
 
@@ -190,20 +216,20 @@ export class Arcaea{
     }
 
     public async addFriend(friend_code: string): Promise<IArcAddResponse>{
-        let data = await this.post<IArcAddResponse>(`${baseUrl}${this.apiVersion}${addUrl}`, `friend_code=${friend_code}`);
+        let data = await this.post<IArcAddResponse>(`${baseUrl}/${this.apiVersion}/${addUrl}`, `friend_code=${friend_code}`);
         return data;
     }
 
     public async delFriend(user_id: number): Promise<boolean>{
         type delResponse = {success: boolean,friends: any[]};
 
-        let data: delResponse = await this.post<delResponse>(`${baseUrl}${this.apiVersion}${delUrl}`, `friend_id=${user_id}`);
+        let data: delResponse = await this.post<delResponse>(`${baseUrl}/${this.apiVersion}/${delUrl}`, `friend_id=${user_id}`);
         return data.success;
     }
 
     public async getFriendsRank(song_id: string, difficulty: ArcDifficulty, limit: number = 10, start: number = 0): Promise<IArcRankResponse>{
 
-        let data = await this.get<IArcRankResponse>(`${baseUrl}${this.apiVersion}${friendRankUrl}`, {
+        let data = await this.get<IArcRankResponse>(`${baseUrl}/${this.apiVersion}/${ARCAEA_ENDPOINT.friendRankUrl}`, {
                 start,
                 limit,
                 song_id,
@@ -214,7 +240,7 @@ export class Arcaea{
     }
 
     public async getWorldRank(song_id: string, difficulty: ArcDifficulty, start: number = 0, limit: number = 20): Promise<IArcRankResponse>{
-        let data = await this.get<IArcRankResponse>(`${baseUrl}${this.apiVersion}${worldRankUrl}`, {
+        let data = await this.get<IArcRankResponse>(`${baseUrl}/${this.apiVersion}/${ARCAEA_ENDPOINT.worldRankUrl}`, {
             start,
             limit,
             song_id,
@@ -225,7 +251,7 @@ export class Arcaea{
     }
 
     public async getSelfRank(song_id: string, difficulty: ArcDifficulty, start: number = 4, limit: number = 18): Promise<IArcSelfRankResponse>{
-        let data = await this.get<IArcSelfRankResponse>(`${baseUrl}${this.apiVersion}${selfRankUrl}`, {
+        let data = await this.get<IArcSelfRankResponse>(`${baseUrl}/${this.apiVersion}/${ARCAEA_ENDPOINT.selfRankUrl}`, {
             start,
             limit,
             song_id,
@@ -236,7 +262,7 @@ export class Arcaea{
     }
 
     public async purchaseFriend(): Promise<IArcPurchaseFriendResponse>{
-        let data = await this.post<IArcPurchaseFriendResponse>(`${baseUrl}${this.apiVersion}${purchaseUrl}`, '');
+        let data = await this.post<IArcPurchaseFriendResponse>(`${baseUrl}/${this.apiVersion}/${purchaseUrl}`, '');
         return data;
     }
 }

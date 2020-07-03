@@ -49,7 +49,7 @@ export interface IArcSetting {
     is_hide_rating: boolean
 }
 
-export interface IArcAggregate {
+export interface IArcSelfInfo {
     is_aprilfools: boolean;
     curr_available_maps: string[];
     character_stats: IArcCharacter[];
@@ -85,7 +85,7 @@ export interface IArcCoreItem{
     _id: string;
 }
 
-export interface IArcPackInfo {
+export interface IArcPackInfoItem {
     name: string;
     items: IArcPackItem[];
     price: number;
@@ -93,21 +93,20 @@ export interface IArcPackInfo {
     discount_from: number;
     discount_to: number;
 }
+
+export type IArcPackInfo = Array<IArcPackInfoItem>;
+
 export interface IArcPackItem {
     id: string;
     type: string;
     is_available: boolean;
 }
-export interface IArcAggregateResponse {
+export interface IArcAggregateResponse<T> {
     success: boolean;
     value?: [
         {
             id: number;
-            value: IArcAggregate;
-        },
-        {
-            id: number;
-            value: IArcPackInfo[];
+            value: T;
         }
     ];
 }
@@ -170,4 +169,17 @@ export interface IArcRegisteredResult{
     success: boolean;
     user_id: number;
     access_token: string;
+}
+
+export interface IArcAggregateEndpointItem{
+    endPoint: ARCAEA_ENDPOINT;
+    params?: { [K: string]: string }
+}
+
+export enum ARCAEA_ENDPOINT {
+    friendRankUrl = "score/song/friend",
+    worldRankUrl = "score/song",
+    selfRankUrl = "score/song/me",
+    selfInfo = "user/me",
+    packInfo = "purchase/bundle/pack"
 }
