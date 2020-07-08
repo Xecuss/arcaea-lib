@@ -65,8 +65,8 @@ export class Arcaea{
         this.apiVersion = arg.apiVersion || '12';
         let headers = Object.assign({}, header,{
             Authorization: "Bearer "+ this.token,
-            AppVersion: arg.appVersion || '3.0.2',
-            'User-Agent': arg.userAgent || "Arc-mobile/3.0.2.1 CFNetwork/811.5.4 Darwin/16.7.0"
+            AppVersion: arg.appVersion || '3.0.3',
+            'User-Agent': arg.userAgent || "Arc-mobile/3.0.3.9 CFNetwork/811.5.4 Darwin/16.7.0"
         });
         this.opt = {
             headers
@@ -91,14 +91,15 @@ export class Arcaea{
         return `Basic ${authStr}`;
     }
 
-    /*private aggregateCheck(res: IArcAggregateResponse<defaultAggregateValue>){
-        if(!res.value) return;
+    public async init(): Promise<void>{
+        let res = await this.aggregate();
+        if(!res.success) return;
 
         if(this.selfId === -1){
             this.selfId = res.value[0].value.user_id;
             this.opt.headers['i'] = this.selfId;
         }
-    }*/
+    }
 
     public createDeviceId(): string{
         let deviceId = uuid().toUpperCase();
