@@ -73,3 +73,5 @@ Same as get friends rank.
 let res: IArcSelfRankResponse = await arc.getSelfRank(song_id,difficulty);
 ```
 Simular to get friends rank, there is an extra rank field in this response.
+
+See more usage in example.ts
