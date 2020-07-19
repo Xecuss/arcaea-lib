@@ -1,6 +1,6 @@
 {
   "name": "arcaea-lib",
-  "version": "0.11.0",
+  "version": "1.0.0-beta",
   "description": "一个简单的arcaea库，用于模拟arcaea的各种请求。",
   "main": "./build/Arcaea.js",
   "scripts": {

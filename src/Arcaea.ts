@@ -91,14 +91,15 @@ export class Arcaea{
         return `Basic ${authStr}`;
     }
 
-    /*private aggregateCheck(res: IArcAggregateResponse<defaultAggregateValue>){
-        if(!res.value) return;
+    public async init(): Promise<void>{
+        let res = await this.aggregate();
+        if(!res.success) return;
 
         if(this.selfId === -1){
             this.selfId = res.value[0].value.user_id;
             this.opt.headers['i'] = this.selfId;
         }
-    }*/
+    }
 
     public createDeviceId(): string{
         let deviceId = uuid().toUpperCase();

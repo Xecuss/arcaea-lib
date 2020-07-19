@@ -1,2 +1,3 @@
-src/test.ts
 build.sh
+example.ts
+src
