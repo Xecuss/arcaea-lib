@@ -65,8 +65,8 @@ export class Arcaea{
         this.apiVersion = arg.apiVersion || '12';
         let headers = Object.assign({}, header,{
             Authorization: "Bearer "+ this.token,
-            AppVersion: arg.appVersion || '3.0.2',
-            'User-Agent': arg.userAgent || "Arc-mobile/3.0.2.1 CFNetwork/811.5.4 Darwin/16.7.0"
+            AppVersion: arg.appVersion || '3.0.5',
+            'User-Agent': arg.userAgent || "Arc-mobile/3.0.5.0 CFNetwork/811.5.4 Darwin/16.7.0"
         });
         this.opt = {
             headers
