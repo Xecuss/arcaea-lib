@@ -4,7 +4,7 @@ import { ARCAEA_ENDPOINT, IArcAggregateEndpointItem, IArcSelfInfo, IArcPackInfo 
 import { TokenNotFoundException, DeviceIdNotFoundException } from './Arcaea.Exception';
 import { v4 as uuid } from 'uuid';
 
-const baseUrl: string = 'https://arcapi.lowiro.com/coffee';
+const baseUrl: string = 'https://arcapi.lowiro.com/latte';
 
 const loginUrl: string = 'auth/login',
       addUrl: string = "friend/me/add",
@@ -62,11 +62,11 @@ export class Arcaea{
         let arg: IArcArg = Arg || {};
         this.token = arg.token || '';
         this.deviceId = arg.deviceId || '';
-        this.apiVersion = arg.apiVersion || '12';
+        this.apiVersion = arg.apiVersion || '13';
         let headers = Object.assign({}, header,{
             Authorization: "Bearer "+ this.token,
-            AppVersion: arg.appVersion || '3.0.5',
-            'User-Agent': arg.userAgent || "Arc-mobile/3.0.5.0 CFNetwork/811.5.4 Darwin/16.7.0"
+            AppVersion: arg.appVersion || '3.4.1',
+            'User-Agent': arg.userAgent || "Arc-mobile/3.4.1.0 CFNetwork/811.5.4 Darwin/16.7.0"
         });
         this.opt = {
             headers
